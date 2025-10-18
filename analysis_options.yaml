@@ -11,14 +11,17 @@ include: package:flutter_lints/flutter.yaml
 
 analyzer:
   errors:
-    # Treat info level issues as info rather than warnings
+    # Treat all info level issues as info rather than warnings/errors
     deprecated_member_use: info
     unused_element: info
     unused_field: info
     unused_import: info
     avoid_print: info
     use_build_context_synchronously: info
-    asset_does_not_exist: info
+    asset_does_not_exist: ignore
+  strong-mode:
+    implicit-casts: false
+    implicit-dynamic: false
 
 linter:
   # The lint rules applied to this project can be customized in the

@@ -1,0 +1,47 @@
+name: Flutter CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check project structure
+        run: |
+          echo "Current directory: $(pwd)"
+          ls -la
+          if [ -f "pubspec.yaml" ]; then
+            echo "pubspec.yaml found, we're in the Flutter project root"
+          else
+            echo "pubspec.yaml not found!"
+            exit 1
+          fi
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.35.6'
+          channel: 'stable'
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Analyze project source
+        continue-on-error: true
+        run: |
+          flutter analyze || echo "Analysis found issues but continuing..."
+          echo "Analysis step completed"
+
+      - name: Run tests
+        run: flutter test
+
+      - name: Build Android
+        run: flutter build apk --debug

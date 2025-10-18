@@ -1,0 +1,67 @@
+name: Flutter Project Check
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  check-project:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    
+    - name: Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.35.6'
+        channel: 'stable'
+        cache: true
+        
+    - name: Show Flutter version
+      run: flutter --version
+      
+    - name: Flutter doctor
+      run: flutter doctor -v
+      
+    - name: Check project structure
+      run: |
+        echo "Current directory: $(pwd)"
+        ls -la
+        if [ -d "cashflow" ]; then
+          echo "Found cashflow directory"
+          ls -la cashflow/
+        else
+          echo "cashflow directory not found!"
+          exit 1
+        fi
+        
+    - name: Install dependencies
+      working-directory: ./cashflow
+      run: flutter pub get
+        
+    - name: Analyze project
+      working-directory: ./cashflow
+      run: flutter analyze
+        
+    - name: Test project structure
+      working-directory: ./cashflow
+      run: flutter pub deps
+        
+    - name: Check iOS configuration (macOS only)
+      if: runner.os == 'macOS'
+      working-directory: ./cashflow
+      run: |
+        echo "Checking iOS configuration..."
+        ls -la ios/
+        cat ios/Runner/Info.plist | grep -A 5 "NSMicrophoneUsageDescription" || echo "Microphone permission not found"
+        cat ios/Runner/Info.plist | grep -A 5 "NSSpeechRecognitionUsageDescription" || echo "Speech recognition permission not found"
