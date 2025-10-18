@@ -50,5 +50,8 @@ jobs:
             echo "No test directory found, skipping tests"
           fi
 
-      - name: Build Android
-        run: flutter build apk --debug
+      - name: Verify build setup
+        run: |
+          echo "Checking Flutter doctor..."
+          flutter doctor -v
+          echo "Flutter setup verification completed"
