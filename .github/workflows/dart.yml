@@ -13,6 +13,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Check project structure
+        run: |
+          echo "Current directory: $(pwd)"
+          ls -la
+          if [ -f "pubspec.yaml" ]; then
+            echo "pubspec.yaml found, we're in the Flutter project root"
+          else
+            echo "pubspec.yaml not found!"
+            exit 1
+          fi
+
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
@@ -21,21 +32,13 @@ jobs:
           cache: true
 
       - name: Install dependencies
-        run: |
-          cd cashflow
-          flutter pub get
+        run: flutter pub get
 
       - name: Analyze project source
-        run: |
-          cd cashflow
-          flutter analyze
+        run: flutter analyze
 
       - name: Run tests
-        run: |
-          cd cashflow
-          flutter test
+        run: flutter test
 
       - name: Build Android
-        run: |
-          cd cashflow
-          flutter build apk --debug
+        run: flutter build apk --debug
