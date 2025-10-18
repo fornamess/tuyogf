@@ -376,8 +376,8 @@ class _ImprovedMainScreenState extends State<ImprovedMainScreen>
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                   colors: [
-                    const Color(0xFFFFD700).withOpacity(0.3),
-                    const Color(0xFFFFD700).withOpacity(0.1),
+                    const Color(0xFFFFD700).withValues(alpha: 0.3),
+                    const Color(0xFFFFD700).withValues(alpha: 0.1),
                   ],
                 ),
                 border: Border.all(

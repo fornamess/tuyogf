@@ -20,6 +20,7 @@ class SpeechBloc extends Bloc<SpeechEvent, SpeechState> {
     on<SpeechStartOneTimeListening>(_onStartOneTimeListening);
     on<SpeechRecognized>(_onRecognized);
     on<SpeechStopListening>(_onStopListening);
+    on<SpeechErrorEvent>(_onError);
   }
 
   Future<void> _onInitialize(SpeechInitialize event, Emitter<SpeechState> emit) async {
@@ -49,19 +50,12 @@ class SpeechBloc extends Bloc<SpeechEvent, SpeechState> {
     _listeningSubscription = _speechService.listeningStream.listen((isListening) {
       if (state is SpeechListening && !isListening) {
         // Если прослушивание завершилось, возвращаемся в состояние IDLE
-        emit(SpeechIdle());
+        add(SpeechStopListening());
       }
     });
 
     _errorSubscription = _speechService.errorStream.listen((error) {
-      emit(SpeechError(message: error));
-      
-      // Возвращаемся к IDLE после ошибки через 3 секунды
-      Timer(const Duration(seconds: 3), () {
-        if (!isClosed) {
-          emit(SpeechIdle());
-        }
-      });
+      add(SpeechErrorEvent(message: error));
     });
 
     _statusSubscription = _speechService.statusStream.listen((statusMessage) {
@@ -88,6 +82,17 @@ class SpeechBloc extends Bloc<SpeechEvent, SpeechState> {
     await _speechService.stopListening();
     emit(SpeechIdle());
     _logger.i('Остановка прослушивания');
+  }
+
+  void _onError(SpeechErrorEvent event, Emitter<SpeechState> emit) {
+    emit(SpeechError(message: event.message));
+    
+    // Возвращаемся к IDLE после ошибки через 3 секунды
+    Timer(const Duration(seconds: 3), () {
+      if (!isClosed) {
+        emit(SpeechIdle());
+      }
+    });
   }
 
   void _onRecognized(SpeechRecognized event, Emitter<SpeechState> emit) {

@@ -9,6 +9,17 @@
 # packages, and plugins designed to encourage good coding practices.
 include: package:flutter_lints/flutter.yaml
 
+analyzer:
+  errors:
+    # Treat info level issues as info rather than warnings
+    deprecated_member_use: info
+    unused_element: info
+    unused_field: info
+    unused_import: info
+    avoid_print: info
+    use_build_context_synchronously: info
+    asset_does_not_exist: info
+
 linter:
   # The lint rules applied to this project can be customized in the
   # section below to disable rules from the `package:flutter_lints/flutter.yaml`
