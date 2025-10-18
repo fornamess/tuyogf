@@ -61,3 +61,16 @@ jobs:
           echo "Checking Flutter doctor..."
           flutter doctor -v
           echo "Flutter setup verification completed"
+
+      - name: Build Android APK
+        run: |
+          echo "Building Android APK..."
+          flutter build apk --release
+          ls -la build/app/outputs/flutter-apk/
+
+      - name: Upload Android APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-apk
+          path: build/app/outputs/flutter-apk/*.apk
+          retention-days: 30
